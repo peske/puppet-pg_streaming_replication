@@ -16,7 +16,7 @@ Assuming that the servers that will participate in replication are:
 the primary server can be initialized with something like:
 
 ```
-  class { 'pg_streaming_replication': 
+class { 'pg_streaming_replication': 
   id_rsa_source        => 'puppet:///files/my_postgres_ssh_id_rsa', 
   id_rsa_pub_source    => 'puppet:///files/my_postgres_ssh_id_rsa.pub', 
   nodes                => ['192.168.1.1', '192.168.1.2'],
@@ -28,7 +28,7 @@ the primary server can be initialized with something like:
 while the standby server can be initialized with:
 
 ```
-  class { 'pg_streaming_replication': 
+class { 'pg_streaming_replication': 
   id_rsa_source        => 'puppet:///files/my_postgres_ssh_id_rsa', 
   id_rsa_pub_source    => 'puppet:///files/my_postgres_ssh_id_rsa.pub', 
   nodes                => ['192.168.1.1', '192.168.1.2'],
