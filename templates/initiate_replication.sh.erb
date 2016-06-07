@@ -232,16 +232,16 @@ fi
 echo "INFO: Ensuring replication user and password in password file (.pgpass)..."
 password_line="*:*:*:${replication_user}:${replication_password}"
 
-if [ ! -f ~/.pgpass ]; then
-	echo $password_line >> ~/.pgpass
-elif ! grep -q "$password_line" ~/.pgpass ; then
-	sed -i -e '$a\' ~/.pgpass
-	echo $password_line >> ~/.pgpass
-	sed -i -e '$a\' ~/.pgpass
+if [ ! -f <%= @postgres_home_dir %>/.pgpass ]; then
+	echo $password_line >> <%= @postgres_home_dir %>/.pgpass
+elif ! grep -q "$password_line" <%= @postgres_home_dir %>/.pgpass ; then
+	sed -i -e '$a\' <%= @postgres_home_dir %>/.pgpass
+	echo $password_line >> <%= @postgres_home_dir %>/.pgpass
+	sed -i -e '$a\' <%= @postgres_home_dir %>/.pgpass
 fi
 
-chown postgres:postgres ~/.pgpass
-chmod 0600 ~/.pgpass
+chown postgres:postgres <%= @postgres_home_dir %>/.pgpass
+chmod 0600 <%= @postgres_home_dir %>/.pgpass
 
 success=false
 
@@ -254,6 +254,8 @@ if ! $success ; then
 fi
 
 <%= @pg_ctl_used %> stop -D <%= @data_dir_used %>
+
+sleep 2
 
 if [ -d <%= @data_dir_used %> ]; then
 
@@ -333,6 +335,8 @@ chmod 0644 <%= @config_dir_used %>/postgresql.conf
 
 echo "INFO: Starting postgresql service..."
 <%= @pg_ctl_used %> start -D <%= @data_dir_used %>
+
+sleep 2
 
 echo "initiate_replication - Done!"
 exit 0

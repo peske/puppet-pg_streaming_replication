@@ -250,7 +250,7 @@ class pg_streaming_replication (
   }
 
   $pg_ctl_used = $pg_ctl ? {
-    ''      => "/var/lib/postgresql/${postgresql_version_used}/bin/pg_ctl",
+    ''      => "/usr/lib/postgresql/${postgresql_version_used}/bin/pg_ctl",
     default => $pg_ctl,
   }
 
@@ -637,17 +637,37 @@ class pg_streaming_replication (
   # If replication mode set then creating/removing im_the_master/im_slave files.
   if $initiate_role == 'primary' or $initiate_role == 'master' {
     
-    exec { 'promote':
-      command => "${config_dir_used}/replscripts/promote.sh -f -t ${trigger_file_used} -s ${standby_file_used} -u replication -p ${replication_password}",
-      path    => ['/sbin', '/bin', '/usr/sbin', '/usr/bin',
-                  '/usr/local/sbin', '/usr/local/bin'],
-      user    => 'postgres',
-      require => [ File_line['postgres_replication_pass'],
-                    File['promote.sh'],
-                    Exec['not_standby', 'not_primary'] ],
-      creates => $trigger_file_used,
+    if (defined('postgresql::server')) {
+
+      exec { 'promote':
+        command => "${config_dir_used}/replscripts/promote.sh -f -t ${trigger_file_used} -s ${standby_file_used} -u replication -p ${replication_password}",
+        path    => ['/sbin', '/bin', '/usr/sbin', '/usr/bin',
+                    '/usr/local/sbin', '/usr/local/bin'],
+        user    => 'postgres',
+        cwd     => "${config_dir_used}/replscripts",
+        require => [ File_line['postgres_replication_pass'],
+                      File['promote.sh'],
+                      Exec['not_standby', 'not_primary'],
+                      Class['postgresql::server'] ],
+        creates => $trigger_file_used,
+      }
+      
     }
-    
+    else {
+      
+      exec { 'promote':
+        command => "${config_dir_used}/replscripts/promote.sh -f -t ${trigger_file_used} -s ${standby_file_used} -u replication -p ${replication_password}",
+        path    => ['/sbin', '/bin', '/usr/sbin', '/usr/bin',
+                    '/usr/local/sbin', '/usr/local/bin'],
+        user    => 'postgres',
+        cwd     => "${config_dir_used}/replscripts",
+        require => [ File_line['postgres_replication_pass'],
+                      File['promote.sh'],
+                      Exec['not_standby', 'not_primary'] ],
+        creates => $trigger_file_used,
+      }
+      
+    }
   }
   elsif $initiate_role == 'standby' or $initiate_role == 'slave' {
     
@@ -655,15 +675,36 @@ class pg_streaming_replication (
       fail("When 'standby' or 'slave' initiate_role is specified you must also specify primary_server_ip.")
     }
 
-    exec { 'initiate_replication':
-      command => "${config_dir_used}/replscripts/initiate_replication.sh -f -t ${trigger_file_used} -s ${standby_file_used} -H ${primary_server_ip} -P ${port_used} -u replication -p ${replication_password}",
-      path    => ['/sbin', '/bin', '/usr/sbin', '/usr/bin',
-                  '/usr/local/sbin', '/usr/local/bin'],
-      user    => 'postgres',
-      require => [ File_line['postgres_replication_pass'],
-                    File['initiate_replication.sh', 'authorized_keys'],
-                    Exec['not_standby', 'not_primary'] ],
-      creates => $standby_file_used,
+    if (defined('postgresql::server')) {
+
+      exec { 'initiate_replication':
+        command => "${config_dir_used}/replscripts/initiate_replication.sh -f -t ${trigger_file_used} -s ${standby_file_used} -H ${primary_server_ip} -P ${port_used} -u replication -p ${replication_password}",
+        path    => ['/sbin', '/bin', '/usr/sbin', '/usr/bin',
+                    '/usr/local/sbin', '/usr/local/bin'],
+        user    => 'postgres',
+        cwd     => "${config_dir_used}/replscripts",
+        require => [ File_line['postgres_replication_pass'],
+                      File['initiate_replication.sh', 'authorized_keys'],
+                      Exec['not_standby', 'not_primary'],
+                      Class['postgresql::server'] ],
+        creates => $standby_file_used,
+      }
+
+    }
+    else {
+
+      exec { 'initiate_replication':
+        command => "${config_dir_used}/replscripts/initiate_replication.sh -f -t ${trigger_file_used} -s ${standby_file_used} -H ${primary_server_ip} -P ${port_used} -u replication -p ${replication_password}",
+        path    => ['/sbin', '/bin', '/usr/sbin', '/usr/bin',
+                    '/usr/local/sbin', '/usr/local/bin'],
+        user    => 'postgres',
+        cwd     => "${config_dir_used}/replscripts",
+        require => [ File_line['postgres_replication_pass'],
+                      File['initiate_replication.sh', 'authorized_keys'],
+                      Exec['not_standby', 'not_primary'] ],
+        creates => $standby_file_used,
+      }
+      
     }
     
   }

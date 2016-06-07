@@ -133,7 +133,7 @@ slotcount=$(psql -Atc "SELECT count (*) FROM pg_replication_slots WHERE slot_nam
 
 if ! $success ; then
 
-	echo "ERROR: Cannot check for '${slot_name}' slot existance."
+	echo "ERROR: Cannot check for '${slot_name}' slot existence."
 	exit 4
 
 fi

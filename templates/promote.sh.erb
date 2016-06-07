@@ -41,7 +41,7 @@ while test $# -gt 0; do
 						echo "-u, --user                specify replication role"
 						echo "    Optional, default: replication"
 						echo "-p, --password=PASSWORD   specify password for --user (mandatory)"
-						echo "-f, --force               Forces promotion regardless of existance"
+						echo "-f, --force               Forces promotion regardless of existence"
 						echo "                          of trigger / standby files."
 						echo "    Optional, default: N/A"
 						echo "    Description:       Without this flag the script will require"
@@ -231,7 +231,7 @@ if [ -e <%= @config_dir_used %>/postgresql.conf ]; then
 			
 		if ! $success ; then
 
-			echo "ERROR: Failed to delete '<%= @data_dir_used %>/recovery.conf' file."
+			echo "ERROR: Failed to delete '<%= @config_dir_used %>/postgresql.conf' file."
 			exit 4
 
 		fi
@@ -253,6 +253,8 @@ if [ -e <%= @config_dir_used %>/postgresql.conf ]; then
 			echo "INFO: Restarting postgresql service..."
 			<%= @pg_ctl_used %> restart -D <%= @data_dir_used %>
 
+			sleep 2
+			
 		fi
 		
 	fi
@@ -275,6 +277,8 @@ else
 		
 		echo "INFO: Restarting postgresql service..."
 		<%= @pg_ctl_used %> restart -D <%= @data_dir_used %>
+
+		sleep 2
 		
 	fi
 	
@@ -288,6 +292,8 @@ else
 
 	echo "INFO: Starting postgresql service..."
 	<%= @pg_ctl_used %> start -D <%= @data_dir_used %>
+
+	sleep 2
 	
 fi
 
@@ -298,7 +304,7 @@ rolecount=$(psql -Atc "SELECT count (*) FROM pg_roles WHERE rolname='${replicati
 
 if ! $success ; then
 
-	echo "ERROR: Failed to check existance of '${replication_user}' role."
+	echo "ERROR: Failed to check existence of '${replication_user}' role."
 	exit 5
 
 fi
