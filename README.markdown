@@ -1,6 +1,6 @@
 # pg_streaming_replication #
 
-The module configures and initiates PostgreSQL streaming replication based on _replication slots_. It is based on my tutorial [PostgreSQL HA with pgpool-II](https://www.itenlight.com/blog/2016/05/18/PostgreSQL+HA+with+pgpool-II+-+Part+1) (or to be more precise on the first three parts of the tutorial).
+The module configures and initiates PostgreSQL streaming replication based on _replication slots_. It is based on tutorial [PostgreSQL HA with pgpool-II](https://www.itenlight.com/blog/2016/05/18/PostgreSQL+HA+with+pgpool-II+-+Part+1) (or to be more precise on the first three parts of the tutorial).
 
 It is an open source module, published under [Apache 2.0](http://www.apache.org/licenses/LICENSE-2.0) license and managed at [Github](https://github.com/peske/puppet-pg_streaming_replication). Contributors are welcome!
 
