@@ -1,0 +1,19 @@
+{
+  "name": "fatdragon-pg_streaming_replication",
+  "version": "0.1.0", 
+  "author": "Fat Dragon", 
+  "license": "Apache-2.0",
+  "summary": "Configures PostgreSQL streaming replication based on replication slots.",
+  "source": "https://github.com/peske/puppet-pg_streaming_replication",
+  "project_page": "https://www.itenlight.com/blog/2016/06/04/pg_streaming_replication+Puppet+Module",
+  "issues_url": "https://github.com/peske/puppet-pg_streaming_replication/issues",
+  "tags": ["PostgreSQL", "replication", "HA"],
+  "operatingsystem_support": [
+  	{
+        "operatingsystem": "Ubuntu",
+        "operatingsystemrelease": [ "16.04", "14.04", "15.10", "12.04" ]
+    }],
+    "dependencies": [
+    	{ "name": "puppetlabs/stdlib","version_requirement":">= 4.12.0 < 5.0.0"}
+    ]
+}

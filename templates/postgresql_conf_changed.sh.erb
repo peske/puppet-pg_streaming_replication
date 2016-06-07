@@ -1,0 +1,79 @@
+#!/bin/sh
+# By Fat Dragon, 06/04/2016
+# Checks if postgresql.conf is changed.
+
+postgresql_conf_changed() {
+
+	if [ ! -f <%= @config_dir_used %>/repltemplates/postgresql.conf.lock ]; then
+		replace_templates
+		return 0
+	fi
+	
+	if [ ! -f <%= @config_dir_used %>/repltemplates/postgresql.conf.primary ]; then
+		replace_templates
+		return 0
+	fi
+	
+	if [ ! -f <%= @config_dir_used %>/repltemplates/postgresql.conf.standby ]; then
+		replace_templates
+		return 0
+	fi
+
+	if diff <%= @config_dir_used %>/postgresql.conf <%= @config_dir_used %>/repltemplates/postgresql.conf.lock >/dev/null ; then
+		return 1
+	fi
+	
+	if diff <%= @config_dir_used %>/postgresql.conf <%= @config_dir_used %>/repltemplates/postgresql.conf.primary >/dev/null ; then
+		return 1
+	fi
+	
+	if diff <%= @config_dir_used %>/postgresql.conf <%= @config_dir_used %>/repltemplates/postgresql.conf.standby >/dev/null ; then
+		return 1
+	fi
+	
+	replace_templates
+	return 0
+}
+
+replace_templates() {
+
+	if [ ! -d <%= @config_dir_used %>/repltemplates ]; then
+		mkdir <%= @config_dir_used %>/repltemplates
+		chown postgres:postgres <%= @config_dir_used %>/repltemplates
+		chmod 0755 <%= @config_dir_used %>/repltemplates
+	fi
+
+	if [ -f <%= @config_dir_used %>/repltemplates/postgresql.conf.lock ]; then
+		rm <%= @config_dir_used %>/repltemplates/postgresql.conf.lock;
+	fi
+
+	cp <%= @config_dir_used %>/postgresql.conf <%= @config_dir_used %>/repltemplates/postgresql.conf.lock
+
+	chown postgres:postgres <%= @config_dir_used %>/repltemplates/postgresql.conf.lock
+	chmod 0640 <%= @config_dir_used %>/repltemplates/postgresql.conf.lock
+	
+	if [ -f <%= @config_dir_used %>/repltemplates/postgresql.conf.primary ]; then
+		rm <%= @config_dir_used %>/repltemplates/postgresql.conf.primary;
+	fi
+
+	cp <%= @config_dir_used %>/postgresql.conf <%= @config_dir_used %>/repltemplates/postgresql.conf.primary
+
+	chown postgres:postgres <%= @config_dir_used %>/repltemplates/postgresql.conf.primary
+	chmod 0640 <%= @config_dir_used %>/repltemplates/postgresql.conf.primary
+
+	if [ -f <%= @config_dir_used %>/repltemplates/postgresql.conf.standby ]; then
+		rm <%= @config_dir_used %>/repltemplates/postgresql.conf.standby;
+	fi
+
+	cp <%= @config_dir_used %>/postgresql.conf <%= @config_dir_used %>/repltemplates/postgresql.conf.standby
+
+	chown postgres:postgres <%= @config_dir_used %>/repltemplates/postgresql.conf.standby
+	chmod 0640 <%= @config_dir_used %>/repltemplates/postgresql.conf.standby
+	
+}
+
+if postgresql_conf_changed; then
+	exit 0
+else
+	exit 1
+fi
