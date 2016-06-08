@@ -36,7 +36,7 @@
 #   Default:   '/var/lib/postgresql'
 #
 # [*id_rsa_source*]
-#   Location where postgres user's SSH private key file resieds. 
+#   Location of postgres user's SSH private key file. 
 #   IMPORTANT: Default value should be used only for testing.
 #   IMPORTANT: Must be the same on all servers.
 #   Default:   'puppet:///modules/pg_streaming_replication/id_rsa'
@@ -82,7 +82,7 @@
 #              value is taken from there; otherwise 5432
 #
 # [*max_replication_slots*]
-#   See PostgreSQL documentation about the meaning of this parameter.
+#   See PostgreSQL documentation for details about this parameter.
 #   IMPORTANT: Must be the same on all servers.
 #   Default:   <NUMBER_OF_NODES> + 1
 #              (i.e. if you have 5 elements in *nodes* parameter, the
