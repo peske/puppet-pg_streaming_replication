@@ -1,12 +1,12 @@
 # == Class: pg_streaming_replication
 #
 #  Configures and initiates PostgreSQL streaming replication
-#  based on "replication slots". 
+#  based on "replication slots".
 #
 # === Parameters
 #
 # [*config_dir*]
-#   Configuration directory of PostgreSQL database cluster. 
+#   Configuration directory of PostgreSQL database cluster.
 #   IMPORTANT: Should be specified without trailing slash.
 #   IMPORTANT: Must be the same on all servers.
 #   Default:   If postgresql::server class is used then
@@ -15,7 +15,7 @@
 #              (i.e. '/etc/postgresql/9.5/main')
 #
 # [*data_dir*]
-#   Data directory of PostgreSQL database cluster. 
+#   Data directory of PostgreSQL database cluster.
 #   IMPORTANT: Should be specified without trailing slash.
 #   IMPORTANT: Must be the same on all servers.
 #   Default:   If postgresql::server class is used then
@@ -24,52 +24,52 @@
 #              (i.e. '/var/lib/postgresql/9.5/main')
 #
 # [*pg_ctl*]
-#   Path to pg_ctl command (file) 
+#   Path to pg_ctl command (file)
 #   IMPORTANT: Must be the same on all servers.
 #   Default:   '/usr/lib/postgresql/<POSTGRESQL_VERSION>/bin/pg_ctl'
 #              (i.e. '/usr/lib/postgresql/9.5/bin/pg_ctl')
 #
 # [*postgres_home_dir*]
-#   Data directory of PostgreSQL database cluster. 
+#   Data directory of PostgreSQL database cluster.
 #   IMPORTANT: Should be specified without trailing slash.
 #   IMPORTANT: Must be the same on all servers.
 #   Default:   '/var/lib/postgresql'
 #
 # [*id_rsa_source*]
-#   Location of postgres user's SSH private key file. 
+#   Location of postgres user's SSH private key file.
 #   IMPORTANT: Default value should be used only for testing.
 #   IMPORTANT: Must be the same on all servers.
 #   Default:   'puppet:///modules/pg_streaming_replication/id_rsa'
 #
 # [*id_rsa_pub_source*]
-#   Public key that corresponds to id_rsa_source. 
+#   Public key that corresponds to id_rsa_source.
 #   IMPORTANT: Default value should be used only for testing.
 #   IMPORTANT: Must be the same on all servers.
 #   Default:   'puppet:///modules/pg_streaming_replication/id_rsa.pub'
 #
 # [*nodes*]
 #   Array of IP addresses of ALL the servers that will participate
-#   in replication (including this server). 
+#   in replication (including this server).
 #   IMPORTANT: Must be the same on all servers.
 #   Default:   N/A (mandatory)
 #
 # [*postgresql_version*]
-#   PostgreSQL version. 
+#   PostgreSQL version.
 #   IMPORTANT: Must be the same on all servers.
 #   Default:   If not specified, postgresql::server class will be used
 #              for obtaining the version.
 #
 # [*trigger_file*]
-#   Path of the trigger file (the file that will exist on primary 
-#   server only). There's no reason for setting this value (changing 
+#   Path of the trigger file (the file that will exist on primary
+#   server only). There's no reason for setting this value (changing
 #   the default value).
 #   IMPORTANT: Must be the same on all servers.
 #   Default:   '<config_dir>/im_the_master'
 #              (i.e. '/etc/postgresql/9.5/main/im_the_master')
 #
 # [*standby_file*]
-#   Path of standby file (the file that will exist on standby servers 
-#   only). There's no reason for setting this value (changing the 
+#   Path of standby file (the file that will exist on standby servers
+#   only). There's no reason for setting this value (changing the
 #   default value).
 #   IMPORTANT: Must be the same on all servers.
 #   Default:   '<config_dir>/im_slave'
@@ -109,18 +109,18 @@
 #   Default:   'none'
 #
 # [*primary_server_ip*]
-#   IP address of the primary server. It is used only if initiate_role 
+#   IP address of the primary server. It is used only if initiate_role
 #   is 'slave' or 'standby'; otherwise it is ignored.
 #   Default:   N/A (mandatory if *initiate_role* is 'standby' or 'slave')
 #
 # === Example
 #
 #  Basic installation:
-#  class { 'pg_streaming_replication': 
-#    id_rsa_source        => 'puppet:///files/my_postgres_ssh_id_rsa', 
-#    id_rsa_pub_source    => 'puppet:///files/my_postgres_ssh_id_rsa.pub', 
-#    nodes                => ['192.168.1.1', '192.168.1.2'], 
-#    replication_password => 'BDE4CE17-98E5-4FDC-B03C-B94559FE03D8', 
+#  class { 'pg_streaming_replication':
+#    id_rsa_source        => 'puppet:///files/my_postgres_ssh_id_rsa',
+#    id_rsa_pub_source    => 'puppet:///files/my_postgres_ssh_id_rsa.pub',
+#    nodes                => ['192.168.1.1', '192.168.1.2'],
+#    replication_password => 'BDE4CE17-98E5-4FDC-B03C-B94559FE03D8',
 #  }
 #
 # === Authors
@@ -132,20 +132,20 @@
 # Copyright 2016 IT Enlight
 #
 class pg_streaming_replication (
+  $nodes,
+  $replication_password,
   $config_dir = '',
   $data_dir = '',
   $pg_ctl = '',
   $postgres_home_dir = '/var/lib/postgresql',
   $id_rsa_source = 'puppet:///modules/pg_streaming_replication/id_rsa',
   $id_rsa_pub_source = 'puppet:///modules/pg_streaming_replication/id_rsa.pub',
-  $nodes,
   $postgresql_version = '',
   $trigger_file = '',
   $standby_file = '',
   $port = 0,
   $max_replication_slots = 0,
   $max_wal_senders = 0,
-  $replication_password,
   $initiate_role = 'none',
   $primary_server_ip = '') {
 
@@ -256,7 +256,7 @@ class pg_streaming_replication (
 
   # pg_hba.conf file
   if defined( 'postgresql::server' ) {
-    
+
     if $postgresql::server::manage_pg_hba_conf {
 
       $nodes.each |$node_ip| {
@@ -437,7 +437,7 @@ class pg_streaming_replication (
     mode    => '0744',
     require => File['initiate_replication.sh'],
   }
-  
+
   file { 'repltemplates':
     ensure  => 'directory',
     path    => "${config_dir_used}/repltemplates",
@@ -584,7 +584,7 @@ class pg_streaming_replication (
     require => Exec['postgresql_conf_changed'],
   }
   ->
-  # Generating password file  
+  # Generating password file
   file { '.pgpass':
     ensure  => 'file',
     path    => "${postgres_home_dir}/.pgpass",
@@ -601,7 +601,7 @@ class pg_streaming_replication (
     match   => '^\*\:\*\:\*\:replication\:',
     require => File['.pgpass'],
   }
-  
+
   exec { 'is_primary':
     command => '/bin/true',
     path    => ['/sbin', '/bin', '/usr/sbin', '/usr/bin',
@@ -609,7 +609,7 @@ class pg_streaming_replication (
     onlyif  => "test -e ${trigger_file_used}",
     require => File['.ssh'],
   }
-  
+
   exec { 'not_primary':
     command => '/bin/true',
     path    => ['/sbin', '/bin', '/usr/sbin', '/usr/bin',
@@ -617,7 +617,7 @@ class pg_streaming_replication (
     onlyif  => "test ! -e ${trigger_file_used}",
     require => File['.ssh'],
   }
-  
+
   exec { 'is_standby':
     command => '/bin/true',
     path    => ['/sbin', '/bin', '/usr/sbin', '/usr/bin',
@@ -625,7 +625,7 @@ class pg_streaming_replication (
     onlyif  => "test -e ${standby_file_used}",
     require => File['.ssh'],
   }
-  
+
   exec { 'not_standby':
     command => '/bin/true',
     path    => ['/sbin', '/bin', '/usr/sbin', '/usr/bin',
@@ -633,10 +633,10 @@ class pg_streaming_replication (
     onlyif  => "test ! -e ${standby_file_used}",
     require => File['.ssh'],
   }
-  
+
   # If replication mode set then creating/removing im_the_master/im_slave files.
   if $initiate_role == 'primary' or $initiate_role == 'master' {
-    
+
     if (defined('postgresql::server')) {
 
       exec { 'promote':
@@ -651,10 +651,10 @@ class pg_streaming_replication (
                       Class['postgresql::server'] ],
         creates => $trigger_file_used,
       }
-      
+
     }
     else {
-      
+
       exec { 'promote':
         command => "${config_dir_used}/replscripts/promote.sh -f -t ${trigger_file_used} -s ${standby_file_used} -u replication -p ${replication_password}",
         path    => ['/sbin', '/bin', '/usr/sbin', '/usr/bin',
@@ -666,11 +666,11 @@ class pg_streaming_replication (
                       Exec['not_standby', 'not_primary'] ],
         creates => $trigger_file_used,
       }
-      
+
     }
   }
   elsif $initiate_role == 'standby' or $initiate_role == 'slave' {
-    
+
     if $primary_server_ip == '' {
       fail("When 'standby' or 'slave' initiate_role is specified you must also specify primary_server_ip.")
     }
@@ -704,12 +704,12 @@ class pg_streaming_replication (
                       Exec['not_standby', 'not_primary'] ],
         creates => $standby_file_used,
       }
-      
+
     }
-    
+
   }
   elsif $initiate_role != 'none' {
     fail("Unknown initiate_role value: '${initiate_role}'. Acceptable values are 'primary', 'master', 'standby', 'slave' and 'none'.")
   }
-  
+
 }

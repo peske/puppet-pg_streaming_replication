@@ -42,6 +42,13 @@ class { 'pg_streaming_replication':
 
 ## Release History
 
+### v0.1.1
+
+**Date:** September 1. 2017
+
+**Release Info:**
+* Code cosmetics (thanks to puppet-lint).
+
 ### v0.1.0
 
 **Date:** Jun 7. 2016
